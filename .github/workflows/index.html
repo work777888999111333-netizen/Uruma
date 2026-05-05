@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScamBase | @UrumaKap</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            background-image: radial-gradient(ellipse at 50% 30%, rgba(200,0,0,0.2), transparent 60%),
+                              radial-gradient(ellipse at 50% 70%, rgba(150,0,30,0.15), transparent 60%);
+            background-attachment: fixed;
+            color: #ff2244;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 28px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255,0,50,0.7);
+            margin-bottom: 8px;
+        }
+        .sub {
+            color: #cc4466;
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 16px 36px;
+            margin: 8px;
+            border: 2px solid #ff2244;
+            background: transparent;
+            color: #ff2244;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #ff2244;
+            color: #000;
+            box-shadow: 0 0 30px rgba(255,0,50,0.6);
+        }
+        .btn.fill {
+            background: #ff2244;
+            color: #000;
+        }
+        .btn.fill:hover {
+            background: #cc0030;
+        }
+        .card {
+            background: #000;
+            border: 1px solid #331111;
+            padding: 16px;
+            margin: 10px auto;
+            max-width: 400px;
+            text-align: left;
+        }
+        .card:hover {
+            border-color: #ff2244;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 6px 0;
+            border: 2px solid #ff2244;
+            background: #000;
+            color: #ff2244;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            outline: none;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #441122;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-box {
+            background: #000;
+            border: 2px solid #ff2244;
+            padding: 24px;
+            max-width: 360px;
+            width: 90%;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #000;
+            border: 2px solid #ff2244;
+            color: #ff2244;
+            padding: 12px 20px;
+            font-weight: bold;
+            z-index: 9999;
+            display: none;
+        }
+        .toast.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>⛧ ScamBase ⛧</h1>
+    <p class="sub">We are Anonymous. We are Legion.</p>
+
+    <!-- КНОПКИ ВХОД/РЕГИСТРАЦИЯ -->
+    <div id="authButtons">
+        <button class="btn" onclick="showLogin()">🔐 Войти</button>
+        <button class="btn fill" onclick="showRegister()">📝 Регистрация</button>
+    </div>
+
+    <!-- ИНФО О ПОЛЬЗОВАТЕЛЕ -->
+    <div id="userInfo" style="display:none;">
+        <p style="font-size:16px;font-weight:bold;">⛧ <span id="userNameShow"></span> ⛧</p>
+        <button class="btn" onclick="doLogout()" style="padding:8px 20px;font-size:12px;">Выйти</button>
+    </div>
+
+    <hr style="border:1px solid #331111;margin:20px 0;">
+
+    <!-- ВКЛАДКИ -->
+    <div style="margin-bottom:16px;">
+        <button class="btn" onclick="showTab('home')" style="padding:10px 20px;font-size:13px;">🏠 База</button>
+        <button class="btn" onclick="showTab('blog')" style="padding:10px 20px;font-size:13px;">📝 Блог</button>
+        <button class="btn" onclick="showTab('report')" style="padding:10px 20px;font-size:13px;">🚨 Сообщить</button>
+    </div>
+
+    <!-- ВКЛАДКА: БАЗА -->
+    <div id="tab-home">
+        <input type="text" id="searchBox" placeholder="Поиск по телефону, нику, карте..." onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="btn" onclick="doSearch()" style="padding:10px 20px;font-size:13px;margin-top:6px;">🔍 Искать</button>
+        <div id="scammerList" style="margin-top:14px;"></div>
+    </div>
+
+    <!-- ВКЛАДКА: БЛОГ -->
+    <div id="tab-blog" style="display:none;">
+        <div id="postList"></div>
+        <div id="postForm" style="display:none;margin-top:14px;">
+            <input type="text" id="postTitle" placeholder="Заголовок поста">
+            <textarea id="postContent" placeholder="Текст поста..." rows="4"></textarea>
+            <button class="btn fill" onclick="createPost()" style="padding:10px 20px;font-size:13px;">📤 Опубликовать</button>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: СООБЩИТЬ -->
+    <div id="tab-report" style="display:none;">
+        <input type="text" id="scamName" placeholder="Имя мошенника *">
+        <input type="text" id="scamPhone" placeholder="Телефон">
+        <input type="text" id="scamNick" placeholder="Никнейм">
+        <input type="text" id="scamWallet" placeholder="Номер карты">
+        <textarea id="scamDesc" placeholder="Опишите схему обмана..." rows="3"></textarea>
+        <button class="btn fill" onclick="submitReport()" style="padding:10px 20px;font-size:13px;margin-top:6px;">🚨 Отправить</button>
+    </div>
+
+    <!-- МОДАЛ: ВХОД -->
+    <div class="modal" id="loginModal">
+        <div class="modal-box">
+            <h2>Вход</h2>
+            <input type="text" id="loginUser" placeholder="Логин">
+            <input type="password" id="loginPass" placeholder="Пароль">
+            <p id="loginError" style="color:red;display:none;">Неверный логин или пароль</p>
+            <button class="btn fill" onclick="doLogin()" style="width:100%;margin-top:8px;">Войти</button>
+            <p style="font-size:10px;margin-top:8px;color:#661122;">Нет аккаунта? <a href="#" onclick="hideModal('loginModal');showRegister();" style="color:#ff2244;">Регистрация</a></p>
+            <button class="btn" onclick="hideModal('loginModal')" style="width:100%;margin-top:4px;padding:8px;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛ: РЕГИСТРАЦИЯ -->
+    <div class="modal" id="regModal">
+        <div class="modal-box">
+            <h2>Регистрация</h2>
+            <input type="text" id="regUser" placeholder="Придумайте логин">
+            <input type="password" id="regPass" placeholder="Придумайте пароль">
+            <p id="regError" style="color:red;display:none;">Пользователь уже существует</p>
+            <button class="btn fill" onclick="doRegister()" style="width:100%;margin-top:8px;">Зарегистрироваться</button>
+            <p style="font-size:10px;margin-top:8px;color:#661122;">Уже есть аккаунт? <a href="#" onclick="hideModal('regModal');showLogin();" style="color:#ff2244;">Войти</a></p>
+            <button class="btn" onclick="hideModal('regModal')" style="width:100%;margin-top:4px;padding:8px;">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- ТОСТ -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Хранилище
+        var PREFIX = 'sb3_';
+
+        function load(key, def) {
+            try { return JSON.parse(localStorage.getItem(PREFIX + key)) || def; } catch (e) { return def; }
+        }
+
+        function save(key, val) { localStorage.setItem(PREFIX + key, JSON.stringify(val)); }
+
+        // Инициализация
+        if (!localStorage.getItem(PREFIX + 'accounts')) {
+            save('accounts', { 'UrumaKap': { password: 'oploplopl', role: 'owner' } });
+        }
+        if (!localStorage.getItem(PREFIX + 'scammers')) save('scammers', []);
+        if (!localStorage.getItem(PREFIX + 'blog')) {
+            save('blog', [{
+                title: 'Добро пожаловать на ScamBase!',
+                content: 'We are Anonymous. We are Legion.\n\nЭто база мошенников.\n\nВход: UrumaKap / oploplopl',
+                author: 'UrumaKap',
+                date: new Date().toLocaleString('ru-RU')
+            }]);
+        }
+
+        var currentUser = load('session', null);
+
+        function isOwner() { return currentUser === 'UrumaKap'; }
+
+        // Тост
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(function() { t.classList.remove('show'); }, 2500);
+        }
+
+        // Модалки
+        function showLogin() { document.getElementById('loginModal').classList.add('active');
+            document.getElementById('loginError').style.display = 'none'; }
+
+        function showRegister() { document.getElementById('regModal').classList.add('active');
+            document.getElementById('regError').style.display = 'none'; }
+
+        function hideModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // Авторизация
+        function doLogin() {
+            var u = document.getElementById('loginUser').value.trim();
+            var p = document.getElementById('loginPass').value.trim();
+            var accs = load('accounts', {});
+            if (accs[u] && accs[u].password === p) {
+                currentUser = u;
+                save('session', currentUser);
+                hideModal('loginModal');
+                document.getElementById('loginUser').value = '';
+                document.getElementById('loginPass').value = '';
+                showToast('Добро пожаловать, ' + u + '!');
+                updateUI();
+                renderAll();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function doRegister() {
+            var u = document.getElementById('regUser').value.trim();
+            var p = document.getElementById('regPass').value.trim();
+            if (!u || !p || u.length < 2 || p.length < 3) { showToast('Заполните поля (мин. 2/3 символа)'); return; }
+            var accs = load('accounts', {});
+            if (accs[u]) { document.getElementById('regError').style.display = 'block'; return; }
+            accs[u] = { password: p, role: 'user' };
+            save('accounts', accs);
+            hideModal('regModal');
+            document.getElementById('regUser').value = '';
+            document.getElementById('regPass').value = '';
+            showToast('Регистрация успешна! Войдите.');
+            setTimeout(function() { showLogin(); }, 600);
+        }
+
+        function doLogout() { currentUser = null;
+            save('session', null);
+            updateUI();
+            renderAll();
+            showToast('Вы вышли'); }
+
+        // Обновление интерфейса
+        function updateUI() {
+            document.getElementById('authButtons').style.display = currentUser ? 'none' : 'block';
+            document.getElementById('userInfo').style.display = currentUser ? 'block' : 'none';
+            document.getElementById('postForm').style.display = currentUser ? 'block' : 'none';
+            if (currentUser) {
+                document.getElementById('userNameShow').textContent = currentUser + (isOwner() ? ' 👑' : '');
+            }
+        }
+
+        // Вкладки
+        function showTab(name) {
+            document.getElementById('tab-home').style.display = (name === 'home') ? 'block' : 'none';
+            document.getElementById('tab-blog').style.display = (name === 'blog') ? 'block' : 'none';
+            document.getElementById('tab-report').style.display = (name === 'report') ? 'block' : 'none';
+            if (name === 'home') renderScammers();
+            if (name === 'blog') renderBlog();
+        }
+
+        // Скамеры
+        function renderScammers() {
+            var list = load('scammers', []);
+            var html = '';
+            if (list.length === 0) {
+                html = '<p style="color:#441122;">База пока пуста</p>';
+            } else {
+                for (var i = 0; i < list.length; i++) {
+                    var s = list[i];
+                    html += '<div class="card"><b>' + s.name + '</b><br><small>' + (s.nick || '') + ' • ' + (s.category || '') +
+                        '</small><br>' + (s.phone || '') + ' | ' + (s.wallet || '') + '<br><small>' + (s.date || '') +
+                        '</small>';
+                    if (isOwner() || (currentUser && currentUser === s.author)) {
+                        html += ' <button onclick="deleteScammer(' + i + ')" style="color:red;background:none;border:1px solid red;cursor:pointer;font-family:monospace;">X</button>';
+                    }
+                    html += '</div>';
+                }
+            }
+            document.getElementById('scammerList').innerHTML = html;
+        }
+
+        function submitReport() {
+            var name = document.getElementById('scamName').value.trim();
+            if (!name) { showToast('Введите имя'); return; }
+            var sc = load('scammers', []);
+            sc.push({
+                name: name,
+                category: 'Мошенник',
+                phone: document.getElementById('scamPhone').value.trim(),
+                nick: document.getElementById('scamNick').value.trim(),
+                wallet: document.getElementById('scamWallet').value.trim(),
+                desc: document.getElementById('scamDesc').value.trim(),
+                date: new Date().toLocaleString('ru-RU'),
+                author: currentUser || 'Аноним'
+            });
+            save('scammers', sc);
+            document.getElementById('scamName').value = '';
+            document.getElementById('scamPhone').value = '';
+            document.getElementById('scamNick').value = '';
+            document.getElementById('scamWallet').value = '';
+            document.getElementById('scamDesc').value = '';
+            renderScammers();
+            showTab('home');
+            showToast('Жалоба отправлена!');
+        }
+
+        function doSearch() {
+            var q = document.getElementById('searchBox').value.trim().toLowerCase();
+            var list = load('scammers', []);
+            var filtered = [];
+            for (var i = 0; i < list.length; i++) {
+                var s = list[i];
+                if ((s.name || '').toLowerCase().indexOf(q) !== -1 || (s.phone || '').indexOf(q) !== -1 || (s.wallet || '')
+                    .indexOf(q) !== -1 || (s.nick || '').toLowerCase().indexOf(q) !== -1) {
+                    filtered.push(s);
+                }
+            }
+            var html = '';
+            if (filtered.length === 0) {
+                html = '<p style="color:#441122;">Ничего не найдено</p>';
+            } else {
+                for (var j = 0; j < filtered.length; j++) {
+                    var f = filtered[j];
+                    html += '<div class="card"><b>' + f.name + '</b><br><small>' + (f.nick || '') + ' • ' + (f.category || '') +
+                        '</small><br>' + (f.phone || '') + ' | ' + (f.wallet || '') + '</div>';
+                }
+            }
+            document.getElementById('scammerList').innerHTML = html;
+        }
+
+        function deleteScammer(i) {
+            if (!confirm('Удалить?')) return;
+            var sc = load('scammers', []);
+            sc.splice(i, 1);
+            save('scammers', sc);
+            renderScammers();
+            showToast('Удалено');
+        }
+
+        // Блог
+        function renderBlog() {
+            var posts = load('blog', []);
+            var html = '';
+            if (posts.length === 0) {
+                html = '<p style="color:#441122;">Постов пока нет</p>';
+            } else {
+                for (var i = posts.length - 1; i >= 0; i--) {
+                    var p = posts[i];
+                    html += '<div class="card"><b>' + p.title + '</b><br><small>' + p.author + ' • ' + (p.date || '') +
+                        '</small><br><br>' + p.content.replace(/\n/g, '<br>') + '';
+                    if (isOwner() || (currentUser && currentUser === p.author)) {
+                        html += '<br><button onclick="deletePost(' + i + ')" style="color:red;background:none;border:1px solid red;cursor:pointer;font-family:monospace;margin-top:6px;">X Удалить</button>';
+                    }
+                    html += '</div>';
+                }
+            }
+            document.getElementById('postList').innerHTML = html;
+        }
+
+        function createPost() {
+            if (!currentUser) { showToast('Войдите, чтобы писать посты'); return; }
+            var title = document.getElementById('postTitle').value.trim();
+            var content = document.getElementById('postContent').value.trim();
+            if (!title || !content) { showToast('Заполните заголовок и текст'); return; }
+            var posts = load('blog', []);
+            posts.push({ title: title, content: content, author: currentUser, date: new Date().toLocaleString('ru-RU') });
+            save('blog', posts);
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postContent').value = '';
+            renderBlog();
+            showTab('blog');
+            showToast('Пост опубликован!');
+        }
+
+        function deletePost(i) {
+            if (!confirm('Удалить пост?')) return;
+            var posts = load('blog', []);
+            posts.splice(i, 1);
+            save('blog', posts);
+            renderBlog();
+            showToast('Пост удалён');
+        }
+
+        // Старт
+        updateUI();
+        renderScammers();
+        renderBlog();
+    </script>
+</body>
+          </html>
