@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScamBase — Anonymous | @UrumaKap</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --surface: #0a0a0a;
+            --border: #331111;
+            --text: #ff3355;
+            --text2: #cc4466;
+            --accent: #ff1144;
+            --font: 'Courier New', monospace;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse at 50% 30%, rgba(200,0,50,0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 70%, rgba(180,0,80,0.15) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0005 0%, #0a0a0a 40%, #0a0a0a 60%, #050005 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        .stars-container { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+        .star {
+            position:absolute; background:#fff; border-radius:50%;
+            animation: twinkle var(--dur) ease-in-out infinite;
+            animation-delay: var(--del);
+            box-shadow: 0 0 var(--gl) rgba(255,255,255,0.7);
+        }
+        @keyframes twinkle {
+            0%,100% { opacity:0.2; transform:scale(1); }
+            50% { opacity:1; transform:scale(2); }
+        }
+
+        header {
+            background: rgba(5,0,0,0.95); border-bottom:2px solid var(--accent);
+            position:sticky; top:0; z-index:100; padding:0 16px;
+        }
+        .header-inner {
+            max-width: 800px; margin:0 auto; height:54px;
+            display:flex; align-items:center; justify-content:center; gap:20px;
+            flex-wrap:wrap;
+        }
+        .logo {
+            font-weight:900; font-size:18px; color:var(--accent);
+            text-decoration:none; letter-spacing:2px; cursor:pointer;
+            text-shadow: 0 0 15px rgba(255,50,80,0.7);
+        }
+
+        .container { max-width: 700px; margin:0 auto; padding:20px 16px 40px; position:relative; z-index:1; }
+
+        .hero { text-align:center; padding:30px 0 20px; }
+        .hero h1 { font-size:24px; font-weight:900; letter-spacing:3px; text-shadow:0 0 20px rgba(255,50,80,0.7); margin-bottom:6px; }
+        .hero p { color:var(--text2); font-size:12px; letter-spacing:2px; margin-bottom:20px; }
+
+        /* КНОПКИ НАВИГАЦИИ ПО ЦЕНТРУ */
+        .nav-buttons {
+            display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:20px;
+        }
+        .nav-btn {
+            padding:12px 24px; border:2px solid var(--accent); background:transparent;
+            color:var(--accent); font-family:var(--font); font-size:14px; font-weight:900;
+            letter-spacing:2px; cursor:pointer; transition:all 0.3s; text-transform:uppercase;
+            text-decoration:none; display:inline-block;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background:var(--accent); color:#000; box-shadow:0 0 25px rgba(255,20,60,0.6);
+        }
+
+        /* КНОПКИ ВХОД/РЕГИСТРАЦИЯ */
+        .auth-buttons {
+            display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:16px;
+        }
+        .btn {
+            padding:14px 32px; border:2px solid var(--accent); background:transparent;
+            color:var(--accent); font-family:var(--font); font-size:15px; font-weight:900;
+            letter-spacing:2px; cursor:pointer; transition:all 0.3s; text-transform:uppercase;
+            text-decoration:none; display:inline-block; text-align:center;
+        }
+        .btn:hover { background:var(--accent); color:#000; box-shadow:0 0 30px rgba(255,20,60,0.6); }
+        .btn.fill { background:var(--accent); color:#000; }
+        .btn.fill:hover { background:#cc0030; }
+
+        .user-info-bar {
+            text-align:center; margin-bottom:16px; font-size:14px; font-weight:700;
+            color:var(--accent); display:none;
+        }
+
+        .search-wrap { display:flex; gap:6px; margin:0 auto 16px; max-width:460px; }
+        .search-wrap input {
+            flex:1; padding:12px 16px; border:2px solid var(--accent); background:#000;
+            color:var(--accent); font-size:14px; outline:none; font-family:var(--font);
+            letter-spacing:1px;
+        }
+        .search-wrap input::placeholder { color:#441122; }
+        .search-wrap button {
+            padding:12px 20px; border:2px solid var(--accent); background:#000;
+            color:var(--accent); font-weight:900; cursor:pointer; font-family:var(--font);
+            font-size:14px; letter-spacing:2px; transition:all 0.3s;
+        }
+        .search-wrap button:hover { background:var(--accent); color:#000; }
+
+        .grid { display:grid; gap:10px; }
+        .card {
+            background:#000; border:1px solid var(--border); padding:14px;
+            transition:border 0.3s;
+        }
+        .card:hover { border-color:var(--accent); }
+        .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px; }
+        .card-avatar {
+            width:36px; height:36px; border:2px solid var(--accent); display:flex;
+            align-items:center; justify-content:center; font-weight:900; color:var(--accent);
+            font-size:14px; flex-shrink:0;
+        }
+        .badge { padding:2px 8px; border:1px solid var(--accent); font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent); }
+        .card-title { font-weight:900; font-size:14px; letter-spacing:1px; margin-bottom:3px; }
+        .card-sub { font-size:10px; color:var(--text2); margin-bottom:6px; letter-spacing:1px; }
+        .card-info { font-size:10px; color:var(--text2); margin-bottom:6px; }
+        .card-info .row { display:flex; gap:4px; align-items:center; }
+        .card-info .lbl { color:#661122; min-width:35px; }
+        .card-info .val { color:var(--text); word-break:break-all; }
+        .card-footer { font-size:9px; color:#661122; padding-top:6px; border-top:1px solid var(--border); display:flex; justify-content:space-between; }
+        .btn-xs { padding:4px 10px; border:1px solid var(--accent); font-size:9px; font-weight:700; cursor:pointer; font-family:var(--font); background:transparent; color:var(--accent); transition:all 0.3s; }
+        .btn-xs:hover { background:var(--accent); color:#000; }
+
+        .post-card { background:#000; border:1px solid var(--border); padding:14px; margin-bottom:8px; }
+        .post-card h3 { font-size:15px; margin-bottom:4px; letter-spacing:1px; }
+        .post-meta { font-size:9px; color:#661122; margin-bottom:6px; display:flex; gap:8px; }
+        .post-body { font-size:12px; color:#cc4466; white-space:pre-wrap; line-height:1.6; }
+        .post-actions { margin-top:8px; padding-top:6px; border-top:1px solid var(--border); }
+
+        .form-card { background:#000; border:2px solid var(--accent); padding:18px; margin:0 auto; }
+        .field { margin-bottom:10px; }
+        .field label { display:block; font-size:10px; font-weight:900; color:var(--accent); text-transform:uppercase; letter-spacing:2px; margin-bottom:3px; }
+        .field input, .field textarea, .field select {
+            width:100%; padding:10px 14px; border:1px solid var(--accent); background:#000;
+            color:var(--accent); font-size:12px; font-family:var(--font); outline:none; resize:vertical;
+        }
+        .field textarea { min-height:60px; }
+        .field select option { background:#000; color:var(--accent); }
+        .row-2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .btn-full {
+            width:100%; padding:12px; border:2px solid var(--accent); font-weight:900;
+            cursor:pointer; font-size:14px; font-family:var(--font); background:#000;
+            color:var(--accent); letter-spacing:2px; text-transform:uppercase; transition:all 0.3s;
+        }
+        .btn-full:hover { background:var(--accent); color:#000; }
+        .btn-red { border-color:#ff0030; color:#ff0030; }
+        .btn-red:hover { background:#ff0030; color:#000; }
+
+        .modal {
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:200;
+            align-items:center; justify-content:center; padding:16px;
+        }
+        .modal.open { display:flex; }
+        .modal-content {
+            background:#000; border:2px solid var(--accent); padding:20px;
+            max-width:380px; width:100%; position:relative;
+            box-shadow:0 0 40px rgba(255,0,50,0.4);
+        }
+        .modal-content h2 { font-size:18px; margin-bottom:14px; text-align:center; letter-spacing:2px; }
+        .modal-close { position:absolute; top:8px; right:12px; background:none; border:none; color:var(--accent); font-size:18px; cursor:pointer; font-family:var(--font); }
+        .modal-error { color:#ff0030; font-size:10px; margin-top:3px; display:none; }
+        .modal-link { text-align:center; font-size:10px; color:#661122; margin-top:10px; }
+        .modal-link a { color:var(--accent); cursor:pointer; font-weight:900; text-decoration:none; }
+
+        .empty { text-align:center; padding:30px; color:#441122; font-size:12px; letter-spacing:2px; }
+        .empty .icon { font-size:36px; margin-bottom:8px; }
+
+        .toast {
+            position:fixed; bottom:16px; right:16px; background:#000; border:2px solid var(--accent);
+            color:var(--accent); padding:12px 18px; font-weight:900; font-size:11px; z-index:300;
+            opacity:0; transform:translateY(8px); transition:all 0.3s;
+            pointer-events:none; letter-spacing:2px;
+        }
+        .toast.show { opacity:1; transform:translateY(0); }
+
+        footer { text-align:center; padding:16px; font-size:10px; color:#441122; border-top:2px solid var(--accent); letter-spacing:2px; }
+        footer .sig { color:var(--accent); font-weight:900; }
+
+        .tab { display:none; }
+        .tab.active { display:block; }
+
+        @media (max-width:600px) {
+            .hero h1 { font-size:18px; }
+            .nav-btn { padding:10px 16px; font-size:12px; }
+            .btn { padding:12px 24px; font-size:13px; }
+            .row-2 { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars-container" id="starsContainer"></div>
+
+    <header>
+        <div class="header-inner">
+            <a class="logo" onclick="switchTab('home')">⛧ ScamBase ⛧</a>
+        </div>
+    </header>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+            <h2>Вход</h2>
+            <div class="field"><label>Логин</label><input type="text" id="loginUser" placeholder="Логин"></div>
+            <div class="field"><label>Пароль</label><input type="password" id="loginPass" placeholder="Пароль"></div>
+            <p class="modal-error" id="loginErr">Неверный логин или пароль</p>
+            <button class="btn-full" onclick="login()">Войти</button>
+            <p class="modal-link">Нет аккаунта? <a onclick="closeModal('loginModal'); openModal('regModal')">Регистрация</a></p>
+        </div>
+    </div>
+
+    <div class="modal" id="regModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('regModal')">✕</button>
+            <h2>Регистрация</h2>
+            <div class="field"><label>Логин</label><input type="text" id="regUser" placeholder="Логин"></div>
+            <div class="field"><label>Пароль</label><input type="password" id="regPass" placeholder="Пароль"></div>
+            <p class="modal-error" id="regErr">Пользователь уже существует</p>
+            <button class="btn-full" onclick="register()">Зарегистрироваться</button>
+            <p class="modal-link">Есть аккаунт? <a onclick="closeModal('regModal'); openModal('loginModal')">Войти</a></p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ГЛАВНАЯ -->
+        <div class="tab active" id="tab-home">
+            <div class="hero">
+                <h1>⛧ Проверь, с кем имеешь дело ⛧</h1>
+                <p>База мошенников. Введи телефон, ник или номер карты.</p>
+            </div>
+
+            <!-- КНОПКИ ВХОД/РЕГИСТРАЦИЯ -->
+            <div class="auth-buttons" id="auth-buttons-block">
+                <button class="btn" onclick="openModal('loginModal')">🔐 Войти</button>
+                <button class="btn fill" onclick="openModal('regModal')">📝 Регистрация</button>
+            </div>
+            <div class="user-info-bar" id="user-info-block">
+                ⛧ <span id="user-name-display"></span> ⛧
+                <br>
+                <button class="btn" onclick="logout()" style="margin-top:8px;padding:8px 20px;font-size:11px;">Выйти</button>
+            </div>
+
+            <!-- НАВИГАЦИЯ -->
+            <div class="nav-buttons">
+                <button class="nav-btn active" id="nav-home-btn" onclick="switchTab('home')">🏠 База</button>
+                <button class="nav-btn" id="nav-blog-btn" onclick="switchTab('blog')">📝 Блог</button>
+                <button class="nav-btn" id="nav-report-btn" onclick="switchTab('report')">🚨 Сообщить</button>
+            </div>
+
+            <div class="search-wrap">
+                <input type="text" id="searchVal" placeholder="Поиск..." onkeydown="if(event.key==='Enter')searchScammers()">
+                <button onclick="searchScammers()">🔍</button>
+            </div>
+            <div class="grid" id="scammerList">
+                <div class="empty"><div class="icon">☠</div><p>База пока пуста</p></div>
+            </div>
+        </div>
+
+        <!-- БЛОГ -->
+        <div class="tab" id="tab-blog">
+            <div class="hero"><h1>⛧ Блог ⛧</h1></div>
+            <div class="nav-buttons">
+                <button class="nav-btn" id="nav-home-btn2" onclick="switchTab('home')">🏠 База</button>
+                <button class="nav-btn active" id="nav-blog-btn2" onclick="switchTab('blog')">📝 Блог</button>
+                <button class="nav-btn" id="nav-report-btn2" onclick="switchTab('report')">🚨 Сообщить</button>
+            </div>
+            <div id="postList"><div class="empty"><div class="icon">☠</div><p>Постов пока нет</p></div></div>
+            <div id="postForm" style="display:none;margin-top:16px;">
+                <div class="form-card">
+                    <h3 style="margin-bottom:8px;">Новый пост</h3>
+                    <div class="field"><label>Заголовок</label><input type="text" id="postTitle" placeholder="О чём пост?"></div>
+                    <div class="field"><label>Текст</label><textarea id="postContent" placeholder="Поделитесь..."></textarea></div>
+                    <button class="btn-full" onclick="createPost()">Опубликовать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- СООБЩИТЬ -->
+        <div class="tab" id="tab-report">
+            <div class="hero"><h1>⛧ Сообщить о мошеннике ⛧</h1></div>
+            <div class="nav-buttons">
+                <button class="nav-btn" id="nav-home-btn3" onclick="switchTab('home')">🏠 База</button>
+                <button class="nav-btn" id="nav-blog-btn3" onclick="switchTab('blog')">📝 Блог</button>
+                <button class="nav-btn active" id="nav-report-btn3" onclick="switchTab('report')">🚨 Сообщить</button>
+            </div>
+            <div class="form-card">
+                <div class="row-2">
+                    <div class="field"><label>Имя *</label><input type="text" id="scamName" placeholder="Иван Петров"></div>
+                    <div class="field"><label>Категория</label><select id="scamCat"><option>Пирамида</option><option>Брокер</option><option>Лже-юрист</option><option>Крипто</option><option>Фишинг</option><option>Другое</option></select></div>
+                </div>
+                <div class="row-2">
+                    <div class="field"><label>Телефон</label><input type="text" id="scamPhone" placeholder="+79001234567"></div>
+                    <div class="field"><label>Никнейм</label><input type="text" id="scamNick" placeholder="@nickname"></div>
+                </div>
+                <div class="field"><label>Карта / Кошелёк</label><input type="text" id="scamWallet" placeholder="4276..."></div>
+                <div class="field"><label>Схема обмана</label><textarea id="scamDesc" placeholder="Опишите..."></textarea></div>
+                <button class="btn-full btn-red" onclick="submitReport()">Отправить</button>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p class="sig">⛧ @UrumaKap ⛧</p>
+        <p>ScamBase © 2026 | We are Anonymous</p>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ========== ЗВЁЗДЫ ==========
+        (function() {
+            var c = document.getElementById('starsContainer');
+            for (var i = 0; i < 100; i++) {
+                var s = document.createElement('div');
+                s.className = 'star';
+                var sz = Math.random() * 2 + 0.6;
+                s.style.width = sz + 'px';
+                s.style.height = sz + 'px';
+                s.style.left = Math.random() * 100 + '%';
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--dur', (Math.random() * 3 + 2) + 's');
+                s.style.setProperty('--del', Math.random() * 5 + 's');
+                s.style.setProperty('--gl', (Math.random() * 3 + 1) + 'px');
+                s.style.opacity = Math.random() * 0.4 + 0.2;
+                c.appendChild(s);
+            }
+        })();
+
+        // ========== ДАННЫЕ ==========
+        var PREFIX = 'sb2_';
+
+        function load(key, def) {
+            try { var v = localStorage.getItem(PREFIX + key); return v ? JSON.parse(v) : def; } catch (e) { return def; }
+        }
+
+        function save(key, val) { localStorage.setItem(PREFIX + key, JSON.stringify(val)); }
+
+        // Инициализация
+        if (!localStorage.getItem(PREFIX + 'accounts')) {
+            save('accounts', { 'UrumaKap': { password: 'oploplopl', role: 'owner' } });
+        }
+        if (!localStorage.getItem(PREFIX + 'scammers')) save('scammers', []);
+        if (!localStorage.getItem(PREFIX + 'blog')) {
+            save('blog', [{
+                title: '⛧ Добро пожаловать на ScamBase! ⛧',
+                content: 'We are Anonymous. We are Legion.\n\nЭто база мошенников. Проверяй людей перед сделкой. Сообщай о скамерах.\n\nВход владельца: UrumaKap / oploplopl\n\nExpect us.',
+                author: 'UrumaKap',
+                date: new Date().toLocaleString('ru-RU')
+            }]);
+        }
+
+        var currentUser = load('session', null);
+        var isOwner = false;
+        var isModerator = false;
+
+        function updateRole() {
+            if (!currentUser) { isOwner = false;
+                isModerator = false; return; }
+            var accs = load('accounts', {});
+            if (accs[currentUser]) {
+                isOwner = accs[currentUser].role === 'owner';
+                isModerator = accs[currentUser].role === 'moderator';
+            }
+        }
+        updateRole();
+
+        // ========== ТОСТ ==========
+        function toast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast';
+            t.classList.add('show');
+            clearTimeout(t._tid);
+            t._tid = setTimeout(function() { t.classList.remove('show'); }, 2500);
+        }
+
+        // ========== МОДАЛКИ ==========
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+            if (id === 'loginModal') document.getElementById('loginErr').style.display = 'none';
+            if (id === 'regModal') document.getElementById('regErr').style.display = 'none';
+        }
+
+      
