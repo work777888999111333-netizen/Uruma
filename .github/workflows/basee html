@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScamBase — Чёрный список мошенников | @UrumaKap</title>
+    <style>
+        :root {
+            --bg: #f5f5f5;
+            --surface: #ffffff;
+            --surface2: #fafafa;
+            --header-bg: #1a1a2e;
+            --header-text: #ffffff;
+            --accent: #e53935;
+            --accent2: #c62828;
+            --text: #212121;
+            --text2: #616161;
+            --border: #e0e0e0;
+            --border-light: #f0f0f0;
+            --green: #2e7d32;
+            --orange: #ef6c00;
+            --blue: #1565c0;
+            --purple: #6a1b9a;
+            --nft-bg: #f3e5f5;
+            --nft-border: #ce93d8;
+            --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --radius: 8px;
+            --radius-sm: 6px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.12);
+            --transition: 0.2s;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* HEADER */
+        header {
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+        .header-top {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+        }
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .logo-sub {
+            font-size: 11px;
+            color: #bdbdbd;
+            letter-spacing: 0.5px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            font-family: var(--font);
+            transition: all var(--transition);
+            text-decoration: none;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+        .btn-white {
+            background: #fff;
+            color: var(--header-bg);
+        }
+        .btn-white:hover {
+            background: #e0e0e0;
+        }
+        .btn-outline-white {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #fff;
+        }
+        .btn-outline-white:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .btn-red {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-red:hover {
+            background: var(--accent2);
+            box-shadow: 0 4px 12px rgba(229,57,53,0.4);
+        }
+        .btn-outline-red {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+        .btn-outline-red:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 11px;
+            border-radius: 16px;
+        }
+
+        /* NAV BAR */
+        .nav-bar {
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .nav-inner a {
+            padding: 14px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text2);
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            transition: all var(--transition);
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+        .nav-inner a:hover {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        .nav-inner a.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        .nav-inner a.nft-tab {
+            color: var(--purple);
+        }
+        .nav-inner a.nft-tab:hover,
+        .nav-inner a.nft-tab.active {
+            color: var(--purple);
+            border-bottom-color: var(--purple);
+        }
+
+        /* MAIN */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px 40px;
+        }
+
+        /* STATS BAR */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .stat-item {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all var(--transition);
+        }
+        .stat-item:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+        .stat-item .stat-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        .stat-item .stat-label {
+            font-size: 11px;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+        .stat-item.nft-stat .stat-num {
+            color: var(--purple);
+        }
+
+        /* SEARCH */
+        .search-section {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .search-section h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        .search-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            font-family: var(--font);
+            font-size: 14px;
+            outline: none;
+            transition: border var(--transition);
+        }
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+        .search-input::placeholder {
+            color: #bdbdbd;
+        }
+        .search-select {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            font-family: var(--font);
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+            cursor: pointer;
+            min-width: 180px;
+        }
+        .search-select:focus {
+            border-color: var(--accent);
+        }
+
+        /* TABLE */
+        .table-container {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .table-header {
+            background: #fafafa;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .table-header h3 {
+            font-size: 16px;
+            color: var(--text);
+        }
+        .badge-count {
+            background: var(--accent);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table th {
+            background: #fafafa;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--border);
+        }
+        table td {
+            padding: 14px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border-light);
+            vertical-align: top;
+        }
+        table tr:hover {
+            background: #fafafa;
+        }
+        .scammer-name {
+            font-weight: 700;
+            color: var(--text);
+        }
+        .scammer-category {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .cat-pyramid {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .cat-broker {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        .cat-crypto {
+            background: #e8f5e9;
+            color: #1b5e20;
+        }
+        .cat-phishing {
+            background: #e3f2fd;
+            color: #0d47a1;
+        }
+        .cat-nft {
+            background: var(--nft-bg);
+            color: var(--purple);
+            border: 1px solid var(--nft-border);
+        }
+        .nft-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            background: var(--nft-bg);
+            color: var(--purple);
+            border: 1px solid var(--nft-border);
+            margin-left: 6px;
+        }
+        .btn-table {
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: #fff;
+            color: var(--accent);
+            font-family: var(--font);
+            transition: all var(--transition);
+        }
+        .btn-table:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* EMPTY */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #bdbdbd;
+        }
+        .empty-state .icon {
+            font-size: 56px;
+            margin-bottom: 12px;
+        }
+        .empty-state h3 {
+            font-size: 18px;
+            color: #9e9e9e;
+            margin-bottom: 6px;
+        }
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-dialog {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 24px;
+            max-width: 440px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            animation: modalSlide 0.25s ease;
+        }
+        @keyframes modalSlide {
+            from { opacity:0; transform: translateY(-20px); }
+            to { opacity:1; transform: translateY(0); }
+        }
+        .modal-dialog h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            text-align: center;
+            color: var(--text);
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: #9e9e9e;
+        }
+        .modal-close:hover { color: #333; }
+        .field {
+            margin-bottom: 14px;
+        }
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .field input, .field textarea, .field select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font);
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            transition: border var(--transition);
+        }
+        .field input:focus, .field textarea:focus, .field select:focus {
+            border-color: var(--accent);
+        }
+        .field textarea { min-height: 70px; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .modal-error {
+            color: var(--accent);
+            font-size: 11px;
+            margin-top: 4px;
+            display: none;
+        }
+        .modal-link {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text2);
+            margin-top: 12px;
+        }
+        .modal-link a {
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #323232;
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 13px;
+            z-index: 300;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: all 0.3s;
+            pointer-events: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* FOOTER */
+        footer {
+            background: var(--header-bg);
+            color: #bdbdbd;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+        footer .sig {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* TABS */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        @media (max-width: 768px) {
+            .header-top { flex-wrap: wrap; gap: 8px; }
+            .logo-text { font-size: 16px; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); }
+            .search-row { flex-direction: column; }
+            .search-input, .search-select { width: 100%; }
+            .form-row { grid-template-columns: 1fr; }
+            table { font-size: 11px; }
+            table th, table td { padding: 8px 10px; }
+            .table-header { flex-direction: column; align-items: flex-start; }
+            .nav-inner a { padding: 10px 12px; font-size: 11px; }
+        }
+        @media (max-width: 480px) {
+            .stats-bar { grid-template-columns: 1fr 1fr; }
+            .stat-item { padding: 10px; }
+            .stat-item .stat-num { font-size: 22px; }
+            .toast { left: 10px; right: 10px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-top">
+            <a class="logo-area" onclick="switchTab('all')">
+                <div class="logo-icon">⚠️</div>
+                <div>
+                    <div class="logo-text">ScamBase</div>
+                    <div class="logo-sub">Чёрный список мошенников</div>
+                </div>
+            </a>
+            <div class="header-actions">
+                <span id="authButtons">
+                    <button class="btn btn-outline-white btn-sm" onclick="openModal('loginModal')">Войти</button>
+                    <button class="btn btn-white btn-sm" onclick="openModal('regModal')">Регистрация</button>
+                </span>
+                <span id="userBadge" style="display:none;">
+                    <span style="font-weight:700;color:#fff;" id="userDisplay"></span>
+                    <button class="btn btn-outline-white btn-sm" onclick="logout()">Выйти</button>
+                </span>
+                <button class="btn btn-red" onclick="switchTab('report')">🚨 Сообщить</button>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <div class="nav-inner">
+                <a onclick="switchTab('all')" id="nav-all" class="active">Все мошенники</a>
+                <a onclick="switchTab('pyramid')" id="nav-pyramid">Пирамиды</a>
+                <a onclick="switchTab('broker')" id="nav-broker">Брокеры</a>
+                <a onclick="switchTab('crypto')" id="nav-crypto">Крипто</a>
+                <a onclick="switchTab('nft')" id="nav-nft" class="nft-tab">🎨 NFT-скам</a>
+                <a onclick="switchTab('phishing')" id="nav-phishing">Фишинг</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="modal-overlay" id="loginModal">
+        <div class="modal-dialog">
+            <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+            <h2>Вход</h2>
+            <div class="field"><label>Логин</label><input type="text" id="loginUser" placeholder="Введите логин"></div>
+            <div class="field"><label>Пароль</label><input type="password" id="loginPass" placeholder="Введите пароль"></div>
+            <p class="modal-error" id="loginErr">Неверный логин или пароль</p>
+            <button class="btn btn-red" style="width:100%;" onclick="doLogin()">Войти</button>
+            <p class="modal-link">Нет аккаунта? <a onclick="closeModal('loginModal'); openModal('regModal')">Регистрация</a></p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="regModal">
+        <div class="modal-dialog">
+            <button class="modal-close" onclick="closeModal('regModal')">✕</button>
+            <h2>Регистрация</h2>
+            <div class="field"><label>Придумайте логин</label><input type="text" id="regUser" placeholder="Логин"></div>
+            <div class="field"><label>Придумайте пароль</label><input type="password" id="regPass" placeholder="Пароль"></div>
+            <p class="modal-error" id="regErr">Пользователь уже существует</p>
+            <button class="btn btn-red" style="width:100%;" onclick="doRegister()">Зарегистрироваться</button>
+            <p class="modal-link">Уже есть аккаунт? <a onclick="closeModal('regModal'); openModal('loginModal')">Войти</a></p>
+        </div>
+    </div>
+
+    <div class="main-container">
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-num" id="statTotal">0</div>
+                <div class="stat-label">Всего в базе</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num" id="
